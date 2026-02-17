@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" width="200" height="50">
+  <!-- Modern minimalist logo design -->
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Circuit-inspired icon -->
+  <g fill="url(#logoGradient)">
+    <!-- Central chip -->
+    <rect x="8" y="15" width="20" height="20" rx="2"/>
+    
+    <!-- Connection points -->
+    <circle cx="10" cy="17" r="1.5" fill="white"/>
+    <circle cx="26" cy="17" r="1.5" fill="white"/>
+    <circle cx="10" cy="33" r="1.5" fill="white"/>
+    <circle cx="26" cy="33" r="1.5" fill="white"/>
+    
+    <!-- Connection lines -->
+    <line x1="10" y1="17" x2="10" y2="12" stroke="url(#logoGradient)" stroke-width="1.5"/>
+    <line x1="26" y1="17" x2="26" y2="12" stroke="url(#logoGradient)" stroke-width="1.5"/>
+    <line x1="10" y1="33" x2="10" y2="38" stroke="url(#logoGradient)" stroke-width="1.5"/>
+    <line x1="26" y1="33" x2="26" y2="38" stroke="url(#logoGradient)" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Text: "EI" monogram -->
+  <text x="45" y="35" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="url(#logoGradient)">
+    EI
+  </text>
+</svg>
