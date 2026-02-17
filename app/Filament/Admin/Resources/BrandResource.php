@@ -4,9 +4,10 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\BrandResource\Pages;
 use App\Models\Brand;
+use BackedEnum;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -15,41 +16,40 @@ class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-tag';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Informations de la marque')
-                    ->schema([
-                        Forms\Components\TextInput::make('name')
-                            ->label('Nom')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
-                                if ($operation === 'create') {
-                                    $set('slug', Str::slug($state));
-                                }
-                            })
-                            ->columnSpanFull(),
+        return $schema->components([
+            Forms\Components\Section::make('Informations de la marque')
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('Nom')
+                        ->required()
+                        ->maxLength(255)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                            if ($operation === 'create') {
+                                $set('slug', Str::slug($state));
+                            }
+                        })
+                        ->columnSpanFull(),
 
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true)
-                            ->readOnly()
-                            ->dehydrated()
-                            ->columnSpanFull(),
+                    Forms\Components\TextInput::make('slug')
+                        ->required()
+                        ->maxLength(255)
+                        ->unique(ignoreRecord: true)
+                        ->readOnly()
+                        ->dehydrated()
+                        ->columnSpanFull(),
 
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
-                            ->default(true)
-                            ->required(),
-                    ])
-                    ->columns(2),
-            ]);
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true)
+                        ->required(),
+                ])
+                ->columns(2),
+        ]);
     }
 
     public static function table(Table $table): Table
@@ -119,6 +119,6 @@ class BrandResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 }
