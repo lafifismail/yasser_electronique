@@ -13,11 +13,18 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
+// Actions v4
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-cube';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
     public static function form(Schema $schema): Schema
     {
@@ -331,29 +338,18 @@ class ProductResource extends Resource
 
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Actif')
-                    ->boolean()
                     ->trueLabel('Produits actifs')
                     ->falseLabel('Produits inactifs')
-                    ->native(false),
-
-                Tables\Filters\Filter::make('out_of_stock')
-                    ->label('Rupture de stock')
-                    ->query(fn($query) => $query->where('stock_qty', 0))
-                    ->toggle(),
-
-                Tables\Filters\Filter::make('low_stock')
-                    ->label('Stock faible (<10)')
-                    ->query(fn($query) => $query->where('stock_qty', '>', 0)->where('stock_qty', '<', 10))
-                    ->toggle(),
+                    ->native(false), // Note: ->boolean() a été retiré ici !
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
