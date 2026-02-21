@@ -180,11 +180,15 @@ class ProductResource extends Resource
                     Forms\Components\Repeater::make('images')
                         ->relationship('images')
                         ->schema([
-                            Forms\Components\TextInput::make('path')
-                                ->label("Chemin / URL de l'image")
-                                ->required()
-                                ->maxLength(255)
-                                ->helperText('Ex: assets/img/products/... ou https://...')
+                            Forms\Components\FileUpload::make('path')
+                                ->label("Image")
+                                ->image()
+                                ->disk('public')
+                                ->directory('products')
+                                ->visibility('public')
+                                ->imagePreviewHeight('80')
+                                ->maxSize(2048)
+                                ->helperText('JPG, PNG, WEBP — max 2 Mo')
                                 ->columnSpan(2),
 
                             Forms\Components\TextInput::make('alt')

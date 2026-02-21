@@ -6,6 +6,12 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Typographie */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* Couleurs de marque Yasser Électronique */
+    --color-brand-gold:    #3B2ECA;
+    --color-brand-gold-dark: #2A1FA8;
+    --color-brand-dark:    #111827;
+    --color-brand-darker:  #0D1321;
 }
