@@ -6,29 +6,26 @@ use App\Filament\Admin\Resources\BrandResource\Pages;
 use App\Models\Brand;
 use BackedEnum;
 use Filament\Forms;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
-// Actions v4
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-
 class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
-
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-tag';
+
+    protected static ?string $modelLabel = 'Marque';
+    protected static ?string $pluralModelLabel = 'Marques';
+    protected static ?string $navigationLabel = 'Marques';
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             Forms\Components\Section::make('Informations de la marque')
-                ->schema([
+                ->components([
                     Forms\Components\TextInput::make('name')
                         ->label('Nom')
                         ->required()
@@ -67,22 +64,21 @@ class BrandResource extends Resource
                 Tables\Columns\IconColumn::make('is_active')->boolean()->sortable(),
                 Tables\Columns\TextColumn::make('products_count')->label('Produits')->counts('products')->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active')
                     ->trueLabel('Actives uniquement')
                     ->falseLabel('Inactives uniquement')
-                    ->native(false), // Note: ->boolean() a été retiré ici !
+                    ->native(false),
             ])
-            ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('name', 'asc');
@@ -95,10 +91,5 @@ class BrandResource extends Resource
             'create' => Pages\CreateBrand::route('/create'),
             'edit' => Pages\EditBrand::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return (string) static::getModel()::count();
     }
 }

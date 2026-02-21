@@ -6,29 +6,26 @@ use App\Filament\Admin\Resources\CategoryResource\Pages;
 use App\Models\Category;
 use BackedEnum;
 use Filament\Forms;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
-// Actions v4
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
-
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $modelLabel = 'Catégorie';
+    protected static ?string $pluralModelLabel = 'Catégories';
+    protected static ?string $navigationLabel = 'Catégories';
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             Forms\Components\Section::make('Informations de la catégorie')
-                ->schema([
+                ->components([
                     Forms\Components\TextInput::make('name')
                         ->label('Nom')
                         ->required()
@@ -73,7 +70,6 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('parent.name')->label('Catégorie parente')->sortable()->searchable()->placeholder('—'),
                 Tables\Columns\IconColumn::make('is_active')->boolean()->sortable(),
                 Tables\Columns\TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
@@ -88,13 +84,13 @@ class CategoryResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
-            ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('name', 'asc');
@@ -107,10 +103,5 @@ class CategoryResource extends Resource
             'create' => Pages\CreateCategory::route('/create'),
             'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return (string) static::getModel()::count();
     }
 }

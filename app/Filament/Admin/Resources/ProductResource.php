@@ -6,31 +6,27 @@ use App\Filament\Admin\Resources\ProductResource\Pages;
 use App\Models\Product;
 use BackedEnum;
 use Filament\Forms;
-use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
-// Actions v4
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-
 class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
-
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cube';
+
+    protected static ?string $modelLabel = 'Produit';
+    protected static ?string $pluralModelLabel = 'Produits';
+    protected static ?string $navigationLabel = 'Produits';
 
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
             Forms\Components\Section::make('Informations générales')
-                ->schema([
+                ->components([
                     Forms\Components\TextInput::make('name')
                         ->label('Nom du produit')
                         ->required()
@@ -66,12 +62,6 @@ class ProductResource extends Resource
                         ->searchable()
                         ->preload()
                         ->required()
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->label('Nom de la catégorie')
-                                ->required()
-                                ->maxLength(255),
-                        ])
                         ->columnSpan(2),
 
                     Forms\Components\Select::make('brand_id')
@@ -80,12 +70,6 @@ class ProductResource extends Resource
                         ->searchable()
                         ->preload()
                         ->nullable()
-                        ->createOptionForm([
-                            Forms\Components\TextInput::make('name')
-                                ->label('Nom de la marque')
-                                ->required()
-                                ->maxLength(255),
-                        ])
                         ->columnSpan(2),
 
                     Forms\Components\Select::make('condition')
@@ -118,7 +102,7 @@ class ProductResource extends Resource
                 ->columns(2),
 
             Forms\Components\Section::make('Prix et Stock')
-                ->schema([
+                ->components([
                     Forms\Components\TextInput::make('price_eur')
                         ->label('Prix (€)')
                         ->required()
@@ -166,7 +150,7 @@ class ProductResource extends Resource
                 ->columns(2),
 
             Forms\Components\Section::make('Descriptions')
-                ->schema([
+                ->components([
                     Forms\Components\Textarea::make('short_description')
                         ->label('Description courte')
                         ->maxLength(500)
@@ -189,10 +173,10 @@ class ProductResource extends Resource
                 ->columns(1),
 
             Forms\Components\Section::make('Images')
-                ->schema([
+                ->components([
                     Forms\Components\Repeater::make('images')
                         ->relationship('images')
-                        ->schema([
+                        ->components([
                             Forms\Components\TextInput::make('path')
                                 ->label("Chemin / URL de l'image")
                                 ->required()
@@ -215,8 +199,7 @@ class ProductResource extends Resource
                             Forms\Components\Toggle::make('is_main')
                                 ->label('Image principale')
                                 ->default(false)
-                                ->reactive()
-                                ->helperText('Une seule image peut être principale'),
+                                ->reactive(),
                         ])
                         ->columns(3)
                         ->defaultItems(0)
@@ -230,10 +213,10 @@ class ProductResource extends Resource
                 ->columns(1),
 
             Forms\Components\Section::make('Attributs')
-                ->schema([
+                ->components([
                     Forms\Components\Repeater::make('attributes')
                         ->relationship('attributes')
-                        ->schema([
+                        ->components([
                             Forms\Components\TextInput::make('attribute_key')
                                 ->label('Clé')
                                 ->required()
@@ -272,84 +255,38 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Nom')
-                    ->searchable()
-                    ->sortable()
-                    ->limit(40),
-
-                Tables\Columns\TextColumn::make('sku')
-                    ->label('SKU')
-                    ->searchable()
-                    ->sortable()
-                    ->copyable()
-                    ->copyMessage('SKU copié')
-                    ->copyMessageDuration(1500),
-
-                Tables\Columns\TextColumn::make('category.name')
-                    ->label('Catégorie')
-                    ->sortable()
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('brand.name')
-                    ->label('Marque')
-                    ->sortable()
-                    ->searchable()
-                    ->placeholder('—'),
-
-                Tables\Columns\TextColumn::make('price_cents')
-                    ->label('Prix')
-                    ->money('EUR', divideBy: 100)
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('stock_qty')
-                    ->label('Stock')
-                    ->sortable()
+                Tables\Columns\TextColumn::make('name')->searchable()->sortable()->limit(40),
+                Tables\Columns\TextColumn::make('sku')->searchable()->sortable()->copyable(),
+                Tables\Columns\TextColumn::make('category.name')->sortable()->searchable(),
+                Tables\Columns\TextColumn::make('brand.name')->sortable()->searchable()->placeholder('—'),
+                Tables\Columns\TextColumn::make('price_cents')->label('Prix')->money('EUR', divideBy: 100)->sortable(),
+                Tables\Columns\TextColumn::make('stock_qty')->sortable()
                     ->badge()
                     ->color(fn(int $state): string => match (true) {
                         $state === 0 => 'danger',
                         $state < 10 => 'warning',
                         default => 'success',
                     }),
-
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Actif')
-                    ->boolean()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Créé le')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('is_active')->boolean()->sortable(),
+                Tables\Columns\TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('category_id')
-                    ->label('Catégorie')
-                    ->relationship('category', 'name')
-                    ->searchable()
-                    ->preload(),
-
-                Tables\Filters\SelectFilter::make('brand_id')
-                    ->label('Marque')
-                    ->relationship('brand', 'name')
-                    ->searchable()
-                    ->preload(),
-
+                Tables\Filters\SelectFilter::make('category_id')->relationship('category', 'name')->searchable()->preload(),
+                Tables\Filters\SelectFilter::make('brand_id')->relationship('brand', 'name')->searchable()->preload(),
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Actif')
                     ->trueLabel('Produits actifs')
                     ->falseLabel('Produits inactifs')
-                    ->native(false), // Note: ->boolean() a été retiré ici !
+                    ->native(false),
             ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -363,11 +300,6 @@ class ProductResource extends Resource
             'view' => Pages\ViewProduct::route('/{record}'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return (string) static::getModel()::count();
     }
 
     public static function getEloquentQuery(): Builder
