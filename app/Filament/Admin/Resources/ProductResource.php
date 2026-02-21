@@ -5,9 +5,12 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\ProductResource\Pages;
 use App\Models\Product;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,14 +28,14 @@ class ProductResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Forms\Components\Section::make('Informations générales')
-                ->components([
+            Section::make('Informations générales')
+                ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('Nom du produit')
                         ->required()
                         ->maxLength(255)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                        ->afterStateUpdated(function (string $operation, $state, Set $set) {
                             if ($operation === 'create') {
                                 $set('slug', Str::slug($state));
                             }
@@ -101,8 +104,8 @@ class ProductResource extends Resource
                 ])
                 ->columns(2),
 
-            Forms\Components\Section::make('Prix et Stock')
-                ->components([
+            Section::make('Prix et Stock')
+                ->schema([
                     Forms\Components\TextInput::make('price_eur')
                         ->label('Prix (€)')
                         ->required()
@@ -113,7 +116,7 @@ class ProductResource extends Resource
                         ->helperText('Le prix sera automatiquement converti en centimes')
                         ->dehydrated(false)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(function ($state, Forms\Set $set) {
+                        ->afterStateUpdated(function ($state, Set $set) {
                             $value = is_numeric($state) ? (float) $state : 0.0;
                             $set('price_cents', (int) round($value * 100));
                         })
@@ -149,8 +152,8 @@ class ProductResource extends Resource
                 ])
                 ->columns(2),
 
-            Forms\Components\Section::make('Descriptions')
-                ->components([
+            Section::make('Descriptions')
+                ->schema([
                     Forms\Components\Textarea::make('short_description')
                         ->label('Description courte')
                         ->maxLength(500)
@@ -172,11 +175,11 @@ class ProductResource extends Resource
                 ])
                 ->columns(1),
 
-            Forms\Components\Section::make('Images')
-                ->components([
+            Section::make('Images')
+                ->schema([
                     Forms\Components\Repeater::make('images')
                         ->relationship('images')
-                        ->components([
+                        ->schema([
                             Forms\Components\TextInput::make('path')
                                 ->label("Chemin / URL de l'image")
                                 ->required()
@@ -212,11 +215,11 @@ class ProductResource extends Resource
                 ])
                 ->columns(1),
 
-            Forms\Components\Section::make('Attributs')
-                ->components([
+            Section::make('Attributs')
+                ->schema([
                     Forms\Components\Repeater::make('attributes')
                         ->relationship('attributes')
-                        ->components([
+                        ->schema([
                             Forms\Components\TextInput::make('attribute_key')
                                 ->label('Clé')
                                 ->required()
@@ -280,13 +283,13 @@ class ProductResource extends Resource
                     ->native(false),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\ViewAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

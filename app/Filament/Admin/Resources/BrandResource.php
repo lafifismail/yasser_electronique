@@ -5,9 +5,12 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\BrandResource\Pages;
 use App\Models\Brand;
 use BackedEnum;
+use Filament\Actions;
 use Filament\Forms;
-use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -24,14 +27,14 @@ class BrandResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
-            Forms\Components\Section::make('Informations de la marque')
-                ->components([
+            Section::make('Informations de la marque')
+                ->schema([
                     Forms\Components\TextInput::make('name')
                         ->label('Nom')
                         ->required()
                         ->maxLength(255)
                         ->live(onBlur: true)
-                        ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                        ->afterStateUpdated(function (string $operation, $state, Set $set) {
                             if ($operation === 'create') {
                                 $set('slug', Str::slug($state));
                             }
@@ -73,12 +76,12 @@ class BrandResource extends Resource
                     ->native(false),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('name', 'asc');
