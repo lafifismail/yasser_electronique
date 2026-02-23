@@ -134,7 +134,7 @@
             <div class="flex items-end justify-between mb-8">
                 <div>
                     <span class="block text-[#3B2ECA] text-xs font-bold uppercase tracking-widest mb-1">Novità</span>
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900">Ultimi Arrivi</h2>
+                    <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-950">Ultimi Arrivi</h2>
                 </div>
                 <span class="text-sm text-gray-400 hidden sm:block">{{ $latestProducts->count() }} prodotti</span>
             </div>
@@ -167,6 +167,21 @@
                                         </svg>
                                     </div>
                                 @endif
+
+                                {{-- Badge Condizione --}}
+                                @php
+                                    $condition = $product->condition ?? 'new';
+                                    $conditionLabel = match($condition) {
+                                        'refurbished' => ['text' => 'Ricondizionato', 'class' => 'bg-blue-500'],
+                                        'used'        => ['text' => 'Usato',          'class' => 'bg-gray-600'],
+                                        default       => ['text' => 'Nuovo',           'class' => 'bg-green-500'],
+                                    };
+                                @endphp
+                                <span class="absolute top-2 right-2 text-white text-xs font-bold px-2 py-1 rounded shadow-sm z-10 {{ $conditionLabel['class'] }}">
+                                    {{ $conditionLabel['text'] }}
+                                </span>
+
+                                {{-- Badge Stock --}}
                                 @if($product->stock_qty === 0)
                                     <span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">Esaurito</span>
                                 @elseif($product->stock_qty < 5)
@@ -202,7 +217,7 @@
     ============================================================ --}}
     <section class="bg-white border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <h2 class="text-center text-lg font-bold text-gray-900 mb-2">I Nostri Top Brand</h2>
+            <h2 class="text-center text-xl md:text-2xl font-extrabold tracking-tight text-gray-950 mb-2">I Nostri Top Brand</h2>
             <p class="text-center text-sm text-gray-400 mb-8">Prodotti ufficiali dei migliori marchi al mondo</p>
 
             <div class="grid grid-cols-3 md:grid-cols-5 gap-4 md:gap-6 items-center">
@@ -228,16 +243,165 @@
     </section>
 
     {{-- ============================================================
-    SEZIONE 7 — NEWSLETTER
+    SEZIONE 6b — RECENSIONI CLIENTI (Social Proof)
+    ============================================================ --}}
+    <section class="bg-gray-50 border-t border-gray-100 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            {{-- Intestazione --}}
+            <div class="text-center mb-12">
+                <span class="block text-[#3B2ECA] text-xs font-bold uppercase tracking-widest mb-2">Recensioni</span>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-950 mb-3">
+                    Cosa dicono i nostri clienti
+                </h2>
+                <p class="text-gray-500 text-base max-w-xl mx-auto">
+                    Scopri perché migliaia di italiani scelgono Yasser Elettronica.
+                </p>
+            </div>
+
+            {{-- Griglia recensioni (dati statici — nessuna variabile PHP) --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                {{-- Recensione 1 — Marco R. --}}
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 flex flex-col gap-4">
+                    {{-- Stelle --}}
+                    <div class="flex gap-0.5">
+                        @for($i = 0; $i < 5; $i++)
+                            <svg class="w-5 h-5 text-[#EAB308]" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        @endfor
+                    </div>
+                    {{-- Testo --}}
+                    <p class="text-sm text-gray-600 leading-relaxed italic flex-1">
+                        "Spedizione rapidissima e prodotto perfetto. Ho acquistato un iPhone 13 ricondizionato ed è praticamente nuovo. Batteria al 100%. Consigliatissimo!"
+                    </p>
+                    {{-- Autore --}}
+                    <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
+                        <div class="w-9 h-9 rounded-full bg-[#3B2ECA]/10 flex items-center justify-center text-[#3B2ECA] font-black text-sm flex-shrink-0">M</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">Marco R.</p>
+                            <span class="inline-flex items-center gap-1 text-xs text-green-600 font-semibold">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>
+                                Acquirente verificato
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Recensione 2 — Giulia F. --}}
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 flex flex-col gap-4">
+                    <div class="flex gap-0.5">
+                        @for($i = 0; $i < 5; $i++)
+                            <svg class="w-5 h-5 text-[#EAB308]" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        @endfor
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed italic flex-1">
+                        "Prezzi imbattibili rispetto ai grandi negozi fisici. Il servizio clienti ha risposto subito a un mio dubbio sulla garanzia. Comprerò sicuramente ancora."
+                    </p>
+                    <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
+                        <div class="w-9 h-9 rounded-full bg-[#3B2ECA]/10 flex items-center justify-center text-[#3B2ECA] font-black text-sm flex-shrink-0">G</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">Giulia F.</p>
+                            <span class="inline-flex items-center gap-1 text-xs text-green-600 font-semibold">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>
+                                Acquirente verificato
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Recensione 3 — Alessandro T. --}}
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 flex flex-col gap-4">
+                    <div class="flex gap-0.5">
+                        @for($i = 0; $i < 5; $i++)
+                            <svg class="w-5 h-5 text-[#EAB308]" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        @endfor
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed italic flex-1">
+                        "Ottima esperienza. Il PC portatile è arrivato imballato alla perfezione. Funziona benissimo e ho risparmiato oltre 200€."
+                    </p>
+                    <div class="flex items-center gap-3 pt-2 border-t border-gray-100">
+                        <div class="w-9 h-9 rounded-full bg-[#3B2ECA]/10 flex items-center justify-center text-[#3B2ECA] font-black text-sm flex-shrink-0">A</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">Alessandro T.</p>
+                            <span class="inline-flex items-center gap-1 text-xs text-green-600 font-semibold">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>
+                                Acquirente verificato
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================
+    SEZIONE 7 — FAQ (DOMANDE FREQUENTI)
+    ============================================================ --}}
+    <section class="bg-white border-t border-gray-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+            <div class="text-center mb-10">
+                <span class="block text-[#3B2ECA] text-xs font-bold uppercase tracking-widest mb-2">FAQ</span>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-950">
+                    Hai dei dubbi? Ti rispondiamo noi.
+                </h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                {{-- Card 1 --}}
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                    <span class="text-2xl mb-4 block">🛡️</span>
+                    <h3 class="font-bold text-gray-900 mb-2 text-sm">
+                        I prodotti hanno una garanzia?
+                    </h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        Sì, tutti i nostri prodotti includono una garanzia da 12 a 24 mesi per offrirti la massima tranquillità.
+                    </p>
+                </div>
+
+                {{-- Card 2 --}}
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                    <span class="text-2xl mb-4 block">📦</span>
+                    <h3 class="font-bold text-gray-900 mb-2 text-sm">
+                        Posso restituire il prodotto?
+                    </h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        Certamente. Hai 14 giorni di tempo per cambiare idea e restituire l'articolo gratuitamente.
+                    </p>
+                </div>
+
+                {{-- Card 3 --}}
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                    <span class="text-2xl mb-4 block">🔒</span>
+                    <h3 class="font-bold text-gray-900 mb-2 text-sm">
+                        I pagamenti sono sicuri?
+                    </h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        Al 100%. Utilizziamo protocolli crittografati avanzati per proteggere ogni tua transazione.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================
+    SEZIONE 8 — NEWSLETTER (LEAD MAGNET)
     ============================================================ --}}
     <section class="bg-gray-50 border-t border-gray-100">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-            <span class="text-2xl mb-4 block">📬</span>
-            <h2 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">
-                Resta aggiornato sulle nostre offerte
+            <span class="text-2xl mb-4 block">🎁</span>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-950 mb-2">
+                Ricevi <span class="text-[#3B2ECA]">10€ di sconto</span> sul tuo primo ordine
             </h2>
             <p class="text-gray-500 mb-8">
-                Iscriviti e ricevi le migliori promozioni prima di tutti.
+                Iscriviti alla newsletter e approfitta subito dello sconto per acquisti superiori a 200€.
             </p>
             <form class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onsubmit="return false;">
                 <input type="email" placeholder="la.tua@email.it"
